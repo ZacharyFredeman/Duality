@@ -9,10 +9,10 @@
 [Bb]uilds/
 [Ll]ogs/
 [Mm]emoryCaptures/
-[Ll]ibraryBee/1900b0aE.dag_fsmtime/
-[Ll]ibraryBee/tundra.digestcache/
-[Ll]ibraryBee/tundra.log.json/
-[Ll]ibrarySearch/transactions.db/
+[Ll]ibraryBee/1900b0aE.dag_fsmtime
+[Ll]ibraryBee/tundra.digestcache
+[Ll]ibraryBee/tundra.log.json
+[Ll]ibrarySearch/transactions.db
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
