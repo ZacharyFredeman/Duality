@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 public class PlayerswPhase2 : MonoBehaviour
@@ -319,16 +320,22 @@ public class PlayerswPhase2 : MonoBehaviour
     {
         phase1 = false;
         phase2 = false;
+
+        int wscrean = p1wins - p2wins;
+        
+
         if((p1wins - p2wins) >= 3)
         {
             Debug.Log("Player 1 is ruler");
-            evil.SetTrigger("gwin");
+            good.SetTrigger("gwin");
+            //SceneManager.LoadScene(DeathVictory, LoadSceneMode.Single);
         }
 
         else if((p2wins - p1wins >= 3))
         {
             Debug.Log("Player 2 is ruler");
-            evil.SetTrigger("attack");
+            evil.SetTrigger("win");
+           // SceneManager.LoadScene(DeathVictory, LoadSceneMode.Single);
         }
 
         return;

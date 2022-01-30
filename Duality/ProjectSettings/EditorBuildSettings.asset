@@ -5,10 +5,22 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Zoe scene.unity
     guid: 2e64d7c3270e4e84984e388676e747ee
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Options Menu.unity
     guid: a18867825156ff1488b2f8975e93b114
+  - enabled: 1
+    path: Assets/Zoe scene.unity
+    guid: 696868d26419df348aa151a08c930842
+  - enabled: 1
+    path: Assets/Scenes/TutorialScene.unity
+    guid: 01c4082968063624facdb6af2d2b7b12
+  - enabled: 1
+    path: Assets/Scenes/StartScene.unity
+    guid: 3c403e98f5b530c44b02ac7adb494c10
+  - enabled: 1
+    path: Assets/Scenes/Options Menu 1.unity
+    guid: 8303c2f77cf65f2459c9b5543a10b728
   m_configObjects: {}
