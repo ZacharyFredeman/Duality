@@ -2,20 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Players : MonoBehaviour
+
+public class PlayerswPhase2 : MonoBehaviour
 {
 
-    private float countdown = 5;
+    public float countdown = 5;
+    public float phase1Countdown = 5;
     private bool phase1;
     private bool countdownB;
     private bool phase2;
     private bool timerStart;
     private float time;
-    private bool joust;
-    private bool winner;
-    private float CountDtime;
-    public int i = 0;
-    public int z = 0;
+    private bool joust = false;
+    public bool timesUp;
+    public bool Player1Wins = false; // bools to handle victory
+    public bool Player2Wins = false;
+    [SerializeField] GameObject Player1Object;
+    [SerializeField] GameObject Player2Object;
+    private int i = 0;
+    private int z = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -25,14 +30,15 @@ public class Players : MonoBehaviour
         bool phase2 = false;
         bool timerStart = false;
         bool joust = false;
-        bool winner = true;
-       
+        bool timesUp = false;
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
-         //Debug.Log(countdownB);
+        //Debug.Log(phase1);
         if (!countdownB)
         {
             if (countdown > 0)
@@ -40,76 +46,119 @@ public class Players : MonoBehaviour
                 countdown -= Time.deltaTime;
                 Debug.Log(countdown);
             }
-            if(countdown < 0)
+            else
             {
                 Debug.Log("countdown done");
-                countdown = 0;
                 countdownB = true;
+                countdown = 0;
                 phase1 = true;
-                winner = true;
             }
         }
-        // Debug.Log(phase1);
 
+        if (timerStart) //Phase1 timer triggered, begin counting
+        {
+            
+        }
+        //Debug.Log(phase1);
+        
         if (phase1 == true)
         {
+            timerStart = true; //Set start timer flag used in Phase1
             Phase1();
+            //phase1 = false; // Set phase1 to false, else it will re-trigger every update
         }
         else if (phase2 == true)
         {
             Phase2();
+            //phase2 = false;
         }
+       // checkInput();
 
     }
 
     void Phase1()
     {
+        
         //Debug.Log("Phase1");    
 
-        //start timer for win checking
-        if (timerStart == false)
+        //Players have 5 seconds to hit a button, start counting
+        //Set flag to start counting, compute in Update()
+        if (timerStart == true)
         {
-            Debug.Log("Phase1");
-            timerStart = true;
-            CountDtime = Time.deltaTime;
-            time = Time.deltaTime;
+            
+            if (phase1Countdown > 0) // Phase1 timer needs to be accessed in Update()
+            {
+                Debug.Log("phase1Countdown: " + phase1Countdown);
+                phase1Countdown -= Time.deltaTime;
+            }
+            else{
+                
+                timesUp = true; //Counter is 0, set "end match" flag
+                timerStart = false; // Stop timer flag
+            }
+            
+            
         }
-        CountDtime += Time.deltaTime;
-        Debug.Log(CountDtime);
-        //check for key press
-        if (Input.GetKeyDown("w") && joust != true)
+
+        if(timesUp) //Timer ran out
+                {
+                    //joust = true;
+                    phase2 = true; //Nobody won, call Phase2
+                    Debug.Log("Time is up! Draw. Begin Phase2");
+                    phase1 = false;
+                    return;
+                }
+
+        
+                //check for key press
+        if (Input.GetKeyDown(KeyCode.W) && joust != true) // Player 1 strikes first
         {
+            Debug.Log("Player 1 strikes first!");
             joust = true;
+            Player1Wins = true;
+            timerStart = false; // Match is over, stop timer
+        }
+
+       else if (Input.GetKeyDown(KeyCode.UpArrow) && !joust) // Player 2 strikes first
+        {
+            Debug.Log("Player 2 strikes first!");
+            joust = true;
+            Player2Wins = true;
+            timerStart = false;
+        }
+       
+        //This if possibly doesn't need to keep track of joust time, but maybe we set some other flags here, since *somebody* won 
+        //Might be helper code for when Player1Wins/Player2Wins is processed
+        if(joust == true)
+        {
             time -= Time.deltaTime;
-            Debug.Log(time);
-            winner = false;
-        }
-        else if (CountDtime > 5) //auto lose for wrong key
-        {
-            joust = true;
-            Debug.Log("YOU SUCK");
+            Debug.Log("Joust time: " + time);
         }
 
-        //determine winner
-        //calc score
-        if (winner == false)
+
+        if(Player1Wins)
         {
-            phase1 = false;
-            phase2 = true;
+            Debug.Log("PLAYER 1 WINS!");
+            return;
         }
 
+        if(Player2Wins)
+        {
+            Debug.Log("Player 2 WINS!");
+            return;
+        }
     }
 
     void Phase2()
     {
         //Debug.Log("Hello Phase 2");
-        string[] keycombo1 = new string[4] { "w", "a", "s", "d" };
+        string[] keycombo1 = new string[4] { "w", "a", "s", "d" };  
         if (i != 4 && z != 4)
         {
             string keyI = keycombo1[i];
-            string key2 = keycombo1[z];
-
-            //player 1
+			string key2 = keycombo1[z];
+            Debug.Log("enter key " + keyI + "or " + key2);
+			//player 1
             if (Input.GetKeyDown("w"))
             {
                 if ("w" == keyI)
@@ -161,10 +210,10 @@ public class Players : MonoBehaviour
                     Debug.Log("Fail");
                 }
             }
-
-
-            //player 2
-            if (Input.GetKeyDown(KeyCode.UpArrow))
+			
+			
+			//player 2
+			if (Input.GetKeyDown(KeyCode.UpArrow))
             {
                 if ("w" == key2)
                 {
@@ -176,8 +225,8 @@ public class Players : MonoBehaviour
                     Debug.Log("Fail");
                 }
             }
-
-            else if (Input.GetKeyDown(KeyCode.LeftArrow))
+			
+			else if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
                 if ("a" == key2)
                 {
@@ -189,8 +238,8 @@ public class Players : MonoBehaviour
                     Debug.Log("Fail");
                 }
             }
-
-            else if (Input.GetKeyDown(KeyCode.DownArrow))
+			
+			else if (Input.GetKeyDown(KeyCode.DownArrow))
             {
                 if ("s" == key2)
                 {
@@ -202,8 +251,8 @@ public class Players : MonoBehaviour
                     Debug.Log("Fail");
                 }
             }
-
-            else if (Input.GetKeyDown(KeyCode.RightArrow))
+			
+			else if (Input.GetKeyDown(KeyCode.RightArrow))
             {
                 if ("d" == key2)
                 {
@@ -215,17 +264,16 @@ public class Players : MonoBehaviour
                     Debug.Log("Fail");
                 }
             }
-
-            if (i == 4)
-            {
-                //player 1 wins
-            }
-
-            if (z == 4)
-            {
-                //player 2 wins
-            }
+			
+			if(i == 4){
+				//player 1 wins
+			}
+			
+			if(z == 4){
+			//player 2 wins
+			}
         }
 
     }
+   
 }
