@@ -11,7 +11,7 @@ public class PlayerswPhase2 : MonoBehaviour
     private bool phase1;
     private bool countdownB;
     private bool phase2;
-    private bool timerStart;
+    private bool timerStart = true;
     private float time;
     private bool joust = false;
     public bool timesUp;
@@ -21,23 +21,32 @@ public class PlayerswPhase2 : MonoBehaviour
     [SerializeField] GameObject Player2Object;
     private int i = 0;
     private int z = 0;
+    public int p1wins = 0;
+    public int p2wins = 0;
+
+    private Animator evil;
+    private Animator good;
 
     // Start is called before the first frame update
     void Start()
     {
-        bool countdownB = true;
-        bool phase1 = false;
-        bool phase2 = false;
-        bool timerStart = false;
-        bool joust = false;
-        bool timesUp = false;
+        // bool countdownB = true;
+        //bool phase1 = false;
+        //bool phase2 = false;
+        //bool timerStart = false;
+        //bool joust = false;
+        //bool timesUp = false;
+        evil = GetComponent<Animator>();
+        good = GetComponent<Animator>();
 
-
+        countdown = Random.Range(2, 7);
+        phase1Countdown = Random.Range(2, 7);
     }
 
     // Update is called once per frame
     void Update()
     {
+        
         //Debug.Log(phase1);
         if (!countdownB)
         {
@@ -54,16 +63,10 @@ public class PlayerswPhase2 : MonoBehaviour
                 phase1 = true;
             }
         }
-
-        if (timerStart) //Phase1 timer triggered, begin counting
-        {
-            
-        }
-        //Debug.Log(phase1);
         
         if (phase1 == true)
         {
-            timerStart = true; //Set start timer flag used in Phase1
+            //timerStart = true; //Set start timer flag used in Phase1
             Phase1();
             //phase1 = false; // Set phase1 to false, else it will re-trigger every update
         }
@@ -72,7 +75,13 @@ public class PlayerswPhase2 : MonoBehaviour
             Phase2();
             //phase2 = false;
         }
+        else if (Input.GetKeyDown("space"))
+        {
+            Debug.Log("Spaceee");
+            resetGameState();
+        }
        // checkInput();
+
 
     }
 
@@ -96,8 +105,55 @@ public class PlayerswPhase2 : MonoBehaviour
                 timesUp = true; //Counter is 0, set "end match" flag
                 timerStart = false; // Stop timer flag
             }
-            
-            
+
+
+            //check for key press
+            if (Input.GetKeyDown(KeyCode.W) && joust != true) // Player 1 strikes first
+            {
+                Debug.Log("Player 1 strikes first!");
+                joust = true;
+                Player1Wins = true;
+                timerStart = false; // Match is over, stop timer
+                //animation
+                evil.SetTrigger("block");
+                good.SetTrigger("gattack");
+            }
+
+            else if (Input.GetKeyDown(KeyCode.UpArrow) && !joust) // Player 2 strikes first
+            {
+                Debug.Log("Player 2 strikes first!");
+                joust = true;
+                Player2Wins = true;
+                timerStart = false;
+
+                //animation
+                evil.SetTrigger("attack");
+                good.SetTrigger("gblock");
+            }
+
+            //This if possibly doesn't need to keep track of joust time, but maybe we set some other flags here, since *somebody* won 
+            //Might be helper code for when Player1Wins/Player2Wins is processed
+            if (joust == true)
+            {
+                time -= Time.deltaTime;
+                Debug.Log("Joust time: " + time);
+            }
+
+
+            if (Player1Wins)
+            {
+                Debug.Log("PLAYER 1 WINS!");
+                p1wins += 1;
+                checkWinner();
+            }
+
+            if (Player2Wins)
+            {
+                Debug.Log("Player 2 WINS!");
+                p2wins += 1;
+                checkWinner();
+            }
+
         }
 
         if(timesUp) //Timer ran out
@@ -109,44 +165,6 @@ public class PlayerswPhase2 : MonoBehaviour
                     return;
                 }
 
-        
-                //check for key press
-        if (Input.GetKeyDown(KeyCode.W) && joust != true) // Player 1 strikes first
-        {
-            Debug.Log("Player 1 strikes first!");
-            joust = true;
-            Player1Wins = true;
-            timerStart = false; // Match is over, stop timer
-        }
-
-       else if (Input.GetKeyDown(KeyCode.UpArrow) && !joust) // Player 2 strikes first
-        {
-            Debug.Log("Player 2 strikes first!");
-            joust = true;
-            Player2Wins = true;
-            timerStart = false;
-        }
-       
-        //This if possibly doesn't need to keep track of joust time, but maybe we set some other flags here, since *somebody* won 
-        //Might be helper code for when Player1Wins/Player2Wins is processed
-        if(joust == true)
-        {
-            time -= Time.deltaTime;
-            Debug.Log("Joust time: " + time);
-        }
-
-
-        if(Player1Wins)
-        {
-            Debug.Log("PLAYER 1 WINS!");
-            return;
-        }
-
-        if(Player2Wins)
-        {
-            Debug.Log("Player 2 WINS!");
-            return;
-        }
     }
 
     void Phase2()
@@ -266,13 +284,54 @@ public class PlayerswPhase2 : MonoBehaviour
             }
 			
 			if(i == 4){
-				//player 1 wins
-			}
+                Debug.Log("Player 1 wins");
+                p1wins += 1;
+                evil.SetTrigger("block");
+                good.SetTrigger("gattack");
+                checkWinner();
+
+            }
 			
 			if(z == 4){
-			//player 2 wins
-			}
+                Debug.Log("Player 2 wins");
+                p2wins += 1;
+                evil.SetTrigger("attack");
+                good.SetTrigger("gblock");
+                checkWinner();
+            }
         }
+
+    }
+
+    void resetGameState()
+    {
+        countdownB = false;
+        
+        Player1Wins = false;
+        Player2Wins = false;
+        joust = false;
+        timerStart = true;
+        countdown = Random.Range(2, 7);
+        phase1Countdown = Random.Range(2, 7);
+    }
+
+    void checkWinner()
+    {
+        phase1 = false;
+        phase2 = false;
+        if((p1wins - p2wins) >= 3)
+        {
+            Debug.Log("Player 1 is ruler");
+            evil.SetTrigger("gwin");
+        }
+
+        else if((p2wins - p1wins >= 3))
+        {
+            Debug.Log("Player 2 is ruler");
+            evil.SetTrigger("attack");
+        }
+
+        return;
 
     }
    
