@@ -9,6 +9,10 @@
 [Bb]uilds/
 [Ll]ogs/
 [Mm]emoryCaptures/
+Duality/Library/Bee/1900b0aE.dag_fsmtime/
+Duality/Library/Bee/tundra.digestcache/
+Duality/Library/Bee/tundra.log.json/
+Duality/Library/Search/transactions.db/
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
